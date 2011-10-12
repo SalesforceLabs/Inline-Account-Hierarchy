@@ -1,0 +1,82 @@
+<!--
+    Copyright (c)2008, Matthew Friend, Sales Engineering, Salesforce.com Inc.
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    Neither the name of the�salesforce.com nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission. 
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<!--
+    Note on Changing: Scroll down or search for "Change"
+    Ignore warnings
+--> 
+
+<apex:component Controller="AccountStructure">
+    <apex:attribute name="currentId" description="This is the Account Id for displaying Acccount Hierarchy" type="String" required="true" assignTo="{!currentId}"/>
+
+    <div class="treeNode">
+            <apex:repeat value="{!ObjectStructure}" var="pos" >
+            <apex:repeat value="{!pos.levelFlag}" var="flag" first="0">
+                <apex:image url="/img/tree/empty.gif" height="16" width="20" rendered="{!IF(flag,false,true)}"/>
+                <apex:image url="/s.gif" alt="" width="3" height="16" rendered="{!IF(flag,true,false)}"/>
+                <apex:image url="/img/tree/chain.gif" height="16" width="20" rendered="{!IF(flag,true,false)}"/>
+            </apex:repeat>
+
+            <span height="16" v="top">
+
+            <apex:outputText rendered="{!IF(pos.nodeType=='start',true,false)}">
+                <apex:image id="tree_start" url="/img/tree/minusStart.gif" height="16" width="20" title="Click to expand/collapse nested items." onClick="TreeNodeElement.prototype.toggle(this,'{!pos.nodeId}')"/>
+                <apex:image id="Icon_start" url="/img/icon/custom51_100/globe16.png" width="16" height="16" rendered="{!IF(pos.currentNode,false,true)}"/>
+                <apex:image id="Icon_start_current" url="/img/icon/star16.png" width="16" height="16" rendered="{!IF(pos.currentNode,true,false)}"/>
+            </apex:outputText>
+            <apex:outputText rendered="{!IF(OR(pos.nodeType=='parent',pos.nodeType=='parent_end'),true,false)}">
+                <apex:image id="Tree_parent" url="/img/tree/minus.gif" rendered="{!IF(pos.nodeType=='parent',true,false)}" height="16" width="20" title="Click to expand/collapse nested items." onClick="TreeNodeElement.prototype.toggle(this,'{!pos.nodeId}')"/>
+                <apex:image id="Tree_parent_end" url="/img/tree/minusEnd.gif" rendered="{!IF(pos.nodeType=='parent_end',true,false)}" height="16" width="20" title="Click to expand/collapse nested items." onClick="TreeNodeElement.prototype.toggle(this,'{!pos.nodeId}')"/>                
+                <apex:image id="Icon_parent" url="/img/icon/factory16.png" width="16" height="16" rendered="{!IF(pos.currentNode,false,true)}"/>
+                <apex:image id="Icon_parent_current" url="/img/icon/star16.png" width="16" height="16" rendered="{!IF(pos.currentNode,true,false)}"/>
+            </apex:outputText>
+            <apex:outputText rendered="{!IF(OR(pos.nodeType=='child',pos.nodeType=='child_end'),true,false)}">
+                <apex:image id="Tree_child" url="/img/tree/node.gif" rendered="{!IF(pos.nodeType=='child',true,false)}" height="16" width="20" title="Click to expand/collapse nested items." onClick="TreeNodeElement.prototype.toggle(this,'{!pos.nodeId}')"/>
+                <apex:image id="Tree_child_current" url="/img/tree/nodeEnd.gif" rendered="{!IF(pos.nodeType=='child_end',true,false)}" height="16" width="20" title="Click to expand/collapse nested items." onClick="TreeNodeElement.prototype.toggle(this,'{!pos.nodeId}')"/>
+                <apex:image id="Icon_child" url="/img/icon/desk16.png" width="16" height="16" rendered="{!IF(pos.currentNode,false,true)}"/>    
+                <apex:image id="Icon_child_current" url="/img/icon/star16.png" width="16" height="16" rendered="{!IF(pos.currentNode,true,false)}"/>
+            </apex:outputText>
+            <apex:outputText rendered="{!IF(pos.nodeType=='end',true,false)}">
+                <apex:image id="Tree_end" url="/img/tree/nodeEnd.gif" height="16" width="20"/>&nbsp;
+                <apex:image id="Icon_end" url="/img/icon/desk16.png" width="16" height="16" rendered="{!IF(pos.currentNode,false,true)}"/>
+                <apex:image id="Icon_end_current" url="/img/icon/star16.png" width="16" height="16" rendered="{!IF(pos.currentNode,true,false)}"/>
+            </apex:outputText>
+<!-- Change Below -->
+            <apex:outputLink value="/{!pos.account.id}" style="{!IF(pos.currentNode,'font-weight: bold;','')}" styleClass="columnHeadActiveBlack" target="_top">{!pos.account.name}</apex:outputLink>
+
+<!-- Include the following if you uses sites with accounts -->
+
+            <apex:outputText style="{!IF(pos.currentNode,'font-weight: bold;','')}" value=", {!pos.account.Type}" rendered="{!IF(pos.account.Type != '', true, false)}"/>
+            <apex:outputText style="{!IF(pos.currentNode,'font-weight: bold;','')}" value=", {!pos.account.Industry}" rendered="{!IF(pos.account.Industry!= '', true, false)}"/>&nbsp;
+<!-- Stop -->
+            </span>
+            <div> </div>
+            <apex:outputText rendered="{!IF(OR(pos.nodeType=='child_end',pos.nodeType=='child'),false,true)}">
+                <div id='{!pos.nodeId}'>
+            </apex:outputText>
+            <apex:outputText rendered="{!IF(OR(pos.nodeType=='child_end',pos.nodeType=='child'),true,false)}">
+                <div id='{!pos.nodeId}'><apex:image url="/s.gif" alt="" width="1" height="1"/></div>
+            </apex:outputText>
+            <apex:repeat value="{!pos.closeFlag}" var="close">
+                </div>
+            </apex:repeat>            
+
+    </apex:repeat>
+    <br/><br/><br/>
+    </div>
+</apex:component>
