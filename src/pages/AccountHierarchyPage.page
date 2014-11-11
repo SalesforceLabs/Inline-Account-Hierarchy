@@ -17,7 +17,7 @@
 -->
 
 <apex:page standardController="account" tabStyle="Account" > 
-    <div style="height: 200px" class="bodyDiv" onclick="resizeFrame();">
+    <div style="height: 100%" class="bodyDiv" onclick="resizeFrame();">
         <c:AccountHierarchyTree currentId="{!Account.id}" />
     </div>
 </apex:page>
